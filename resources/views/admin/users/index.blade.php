@@ -2,37 +2,49 @@
 
 @section('content')
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-4">
-                <form class="form-horizontal" id="form-filter">
+        <form id="form-filter">
+            <div class="row">
+                <div class="col-md-3">
                     <div class="form-group">Role
                         <select class="custom-select mb-3 select-filter" name="role" id="role">
                             <option selected>All</option>
-                            @foreach($roles as $role => $value)
-                                <option value="{{ $value }}">{{ucfirst(strtolower($role))}}</option>
+                            @foreach ($roles as $key => $value)
+                                <option value="{{ $value }}" @if ($value == $selectedRole) selected @endif>
+                                    {{ ucfirst(strtolower($key)) }}</option>
                             @endforeach
                         </select>
                     </div>
-                </form>
-            </div>
-            <div class="col-md-4">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="option" id="option3">
-                    <label class="form-check-label" for="option3">Option 3</label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="option" id="option4">
-                    <label class="form-check-label" for="option4">Option 4</label>
+                <div class="col-md-3">
+                    <div class="form-group">Company
+                        <select class="custom-select mb-3 select-filter" name="company" id="company">
+                            <option selected>All</option>
+                            @foreach ($companies as $key => $value)
+                                <option value="{{$key }}" @if ($key == $selectedCompany) selected @endif>
+                                    {{ $value }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">City
+                        <select class="custom-select mb-3 select-filter" name="city" id="city">
+                            <option selected>All</option>
+                            @foreach ($cities as $city)
+                                <option value="{{$city}}"
+                                        @if ($city == $selectedCity) selected @endif>{{ ucfirst(strtolower($city)) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">Clear
+                        <br>
+                        <button type="button" id="clear-filters" class="btn btn-secondary">Clear Filters</button>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <select class="form-select" id="option5">
-                    <option value="">All</option>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                </select>
-            </div>
-        </div>
+        </form>
     </div>
 
     <table class="table table-striped table-centered mb-0">
@@ -50,48 +62,52 @@
         </tr>
         </thead>
         <tbody>
-        @foreach($users as $user)
+        @foreach ($users as $user)
             <tr>
                 <td>
-                    <a href="{{route('admin.users.show', $user->id)}}">
-                        {{$user->id}}
+                    <a href="{{ route('admin.users.show', $user->id) }}">
+                        {{ $user->id }}
                     </a>
                 </td>
                 <td class="table-user">
-                    <img src="{{$user->avatar}}" alt="table-user" class="mr-2 rounded-circle"/>
-                    {{$user->name}}
+                    <img src="{{ $user->avatar }}" alt="table-user" class="mr-2 rounded-circle"/>
+                    {{ $user->name }}
                 </td>
                 <td>
-                    <a href="tel:{{$user->phone}}">
-                        {{$user->phone}}
+                    <a href="tel:{{ $user->phone }}">
+                        {{ $user->phone }}
                     </a>
                 </td>
                 <td>
-                    <a href="mailto:{{$user->email}}">
-                        {{$user->email}}
+                    <a href="mailto:{{ $user->email }}">
+                        {{ $user->email }}
                     </a>
                 </td>
                 <td>
-                    @if($user->role == 0)
-                        <span class="badge badge-danger">{{$user->role_name}}</span>
+                    @if ($user->role == 0)
+                        <span class="badge badge-danger">{{ $user->role_name }}</span>
                     @elseif($user->role == 1)
-                        <span class="badge badge-primary">{{$user->role_name}}</span>
+                        <span class="badge badge-primary">{{ $user->role_name }}</span>
                     @else
-                        <span class="badge badge-success">{{$user->role_name}}</span>
+                        <span class="badge badge-success">{{ $user->role_name }}</span>
                     @endif
                 </td>
                 <td>
-                    {{$user->gender_name}}
+                    {{ $user->gender_name }}
                 </td>
                 <td>
-                    {{$user->city}}
+                    {{ $user->city }}
                 </td>
                 <td>
-                    {{optional($user->company)->name}}
+                    {{ optional($user->company)->name }}
                 </td>
                 <td class="table-action">
                     <a href="javascript: void(0);" class="action-icon"> <i class="mdi mdi-pencil"></i></a>
-                    <a href="javascript: void(0);" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                    <form action="{{ route('admin.users.destroy', $user) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"><i class="mdi mdi-delete"></i></button>
+                    </form>
                 </td>
             </tr>
         @endforeach
@@ -99,7 +115,7 @@
     </table>
     <nav>
         <ul class="pagination pagination-rounded mb-0">
-            {{$users->links()}}
+            {{ $users->links() }}
         </ul>
     </nav>
 @endsection
@@ -109,7 +125,13 @@
             $(".select-filter").change(function () {
                 $("#form-filter").submit();
             });
-
+            $('#clear-filters').click(function () {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('role');
+                url.searchParams.delete('company');
+                url.searchParams.delete('city');
+                window.location.href = url.toString();
+            });
         });
     </script>
 @endpush

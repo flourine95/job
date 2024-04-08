@@ -36,26 +36,43 @@ class UserController extends Controller
             ->with('company:id,name')
             ->latest()
             ->paginate();*/
-
-        $users = $this->model->clone()
+        /*$users = $this->model->clone()
             ->when($request->has('role'), function ($q) use ($request) {
                 return $q->where('role', $request->role);
             })
             ->with('company:id,name')
             ->latest()
-            ->paginate();
+            ->paginate();*/
+        $selectedRole = $request->get('role');
+        $selectedCity = $request->get('city');
+        $selectedCompany = $request->get('company');
+
+        $query = $this->model->clone();
+        if ($request->has('role') && $selectedRole !== 'All') {
+            $query->where('role', $selectedRole);
+        }
+        if ($request->has('company') && $selectedCompany !== 'All') {
+            $query->where('company_id', $selectedCompany);
+        }
+        if ($request->has('city')&& $selectedCity !== 'All') {
+            $query->where('city', $selectedCity);
+        }
+        $users = $query->with('company:id,name')->latest()->paginate();
 
         $cities = $this->model->clone()
-            ->select('city')
+            ->where('city', '<>', '')
             ->distinct()
-            ->get();
-
-
+            ->pluck('city');
+        $companies = Company::query()->pluck('name', 'id',);
         $roles = UserRoleEnum::asArray();
         return view("admin.$this->table.index", [
             'users' => $users,
             'roles' => $roles,
+            'companies' => $companies,
             'cities' => $cities,
+            'selectedRole' => $selectedRole,
+            'selectedCity' => $selectedCity,
+            'selectedCompany' => $selectedCompany,
         ]);
     }
 
@@ -64,5 +81,14 @@ class UserController extends Controller
 
     }
 
+    public function destroy($id){
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+        $user->delete();
+        return redirect()->back();
+    }
 
 }

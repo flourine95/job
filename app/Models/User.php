@@ -8,10 +8,11 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableAlias;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Model implements AuthenticatableAlias
 {
-    use HasFactory, Authenticatable;
+    use HasFactory, Authenticatable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -43,6 +44,7 @@ class User extends Model implements AuthenticatableAlias
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'deleted_at'=> 'datetime',
     ];
 
     public function company(): BelongsTo
