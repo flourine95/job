@@ -1,0 +1,13 @@
+//
+// breadcrumb.css
+//
+
+
+// Breadcrumb item arrow
+.breadcrumb-item {
+    +.breadcrumb-item {
+        &::before {
+            font-family: "Material Design Icons";
+        }
+    }
+}

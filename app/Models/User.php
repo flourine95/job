@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRoleEnum;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableAlias;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class User extends Authenticatable
+class User extends Model implements AuthenticatableAlias
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Authenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -19,6 +20,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'avatar',
         'email',
         'password',
     ];
@@ -42,4 +44,22 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    public function getRoleNameAttribute()
+    {
+        return UserRoleEnum::fromValue((int)$this->role)->key;
+    }
+
+    public function getGenderNameAttribute()
+    {
+        if ($this->gender == null) {
+            return 'Uknown';
+        }
+        return $this->gender ? 'Male' : 'Female';
+    }
 }
