@@ -22,7 +22,7 @@
         @include('layout.top-bar')
         <div class="container-fluid">
             <div class="page-title-box">
-                <h4 class="page-title">{{$title ?? ''}}</h4>
+                <h3 class="page-title">{{$title ?? ''}}</h3>
             </div>
             @yield('content')
         </div>

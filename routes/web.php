@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,6 +21,10 @@ Route::get('/auth/callback/{provider}', [AuthController::class, 'callback'])->na
 Route::get('/register', [AuthController::class, 'register'])->name('auth.register');
 Route::post('/register', [AuthController::class, 'registering'])->name('auth.registering');
 Route::get('/login', [AuthController::class, 'login'])->name('auth.login');
+
+
+// Test
+Route::get('/test', [TestController::class, 'test']);
 
 // Clear application cache:
 Route::get('/clear', function () {

@@ -5,15 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use Illuminate\Support\Facades\View;
 
 class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    private object $model;
+
+    public function __construct()
+    {
+        $this->model = Post::query();
+    }
+
     public function index()
     {
-        //
+        return $this->model->paginate();
     }
 
     /**
